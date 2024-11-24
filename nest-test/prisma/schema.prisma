@@ -1,0 +1,38 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  userId    String     @id @default(uuid())
+  email     String     @unique
+  password  String
+  banned    Boolean    @default(false)
+  banReason String     @default("")
+  roles     Role[]
+  posts     Post[]
+}
+
+model Role {
+  roleId String     @id @default(uuid())
+  value  Roles      @unique @default(Base)
+  users  User[]
+}
+
+model Post {
+  postId      String @id @default(uuid())
+  title       String
+  content     String
+  image       String
+  authorEmail String
+  author      User   @relation(fields: [authorEmail], references: [email])
+}
+
+enum Roles {
+  Base
+  Admin
+}
